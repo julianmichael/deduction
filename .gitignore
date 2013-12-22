@@ -1,0 +1,14 @@
+# eclipse stuff
+.cache
+.classpath
+.project
+.settings
+.settings
+# sbt stuff
+target
+# compiled stuff and caches
+**.class
+**.cache
+.history
+# swap files
+*.swp
