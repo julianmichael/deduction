@@ -145,7 +145,7 @@ case class CNFLeaf(val label: String) extends CNFGrammarAST {
 class Grammar(
   val productions: Set[Production],
   val startSymbol: Option[String] = None,
-  val wordSymbol: Option[String] = None) {
+  val openSymbols: Set[String] = Set()) {
 
   // we change the grammar to Chomsky Normal Form* for parsing
   // * with unary productions 
@@ -155,7 +155,7 @@ class Grammar(
   lazy val nonterminals = productions.map(_.label)
 
   // anything else (as long as it isn't the wordSymbol) is assumed to be a terminal
-  lazy val terminals = productions.flatMap(_.children) -- nonterminals -- Set(wordSymbol).flatten
+  lazy val terminals = productions.flatMap(_.children) -- nonterminals -- openSymbols
   // TODO warn if wordSymbol is not part of the computed set of terminals
 
   def validate = {
@@ -206,10 +206,9 @@ class Grammar(
           val tok = tokens(offset)
           if (terminals(tok)) {
             Set(CNFLeaf(tok))
-          } else wordSymbol match {
-            case Some(symbol) => Set(CNFParent(Unary(symbol, tok), List(CNFLeaf(tok))))
-            case None         => Set()
-          }
+          } else openSymbols.map(
+            sym => (CNFParent(Unary(sym, tok), List(CNFLeaf(tok))))
+          )
         } else { // binary
           // pivotPairs: a list of all of the pairs of table cells that could correspond
           // to the children of the current table cell

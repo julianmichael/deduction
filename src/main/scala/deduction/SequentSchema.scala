@@ -25,17 +25,17 @@ case class SequentSchema(
   }
 }
 
-sealed abstract class AssumptionSchema extends Schema[Set[Formula]]
+sealed abstract class AssumptionSchema extends Schema[Assumptions]
 case class ArbitrarySetSchema(name: String) extends AssumptionSchema {
-  override def matches(targ: Set[Formula]) = Map(name -> targ) :: Nil
+  override def matches(targ: Assumptions) = Map(name -> targ) :: Nil
   override val toString = name
 }
 case class AssumptionsPlusFormulaSchema(remainingAssumptionSchema: AssumptionSchema, formulaSchema: FormulaSchema) extends AssumptionSchema {
-  override def matches(targ: Set[Formula]) = {
-    targ.toList flatMap { formula =>
+  override def matches(targ: Assumptions) = {
+    targ.set.toList flatMap { formula =>
       {
-        val remainingAssumptions = targ - formula
-        val remainingAssumptionNamings = remainingAssumptionSchema.matches(remainingAssumptions)
+        val remainingAssumptions = targ.set - formula
+        val remainingAssumptionNamings = remainingAssumptionSchema.matches(Assumptions(remainingAssumptions))
         val formulaNamings = formulaSchema.matches(formula)
         consistentNamings(remainingAssumptionNamings :: formulaNamings :: Nil)
       }
@@ -44,12 +44,12 @@ case class AssumptionsPlusFormulaSchema(remainingAssumptionSchema: AssumptionSch
   override val toString = s"$remainingAssumptionSchema, $formulaSchema"
 }
 case class UnionSchema(one: AssumptionSchema, two: AssumptionSchema) extends AssumptionSchema {
-  override def matches(targ: Set[Formula]) = {
-    targ.subsets.toList flatMap { first =>
+  override def matches(targ: Assumptions) = {
+    targ.set.subsets.toList flatMap { first =>
       {
-        val second = targ -- first
-        val firstNamings = one.matches(first)
-        val secondNamings = two.matches(second)
+        val second = targ.set -- first
+        val firstNamings = one.matches(Assumptions(first))
+        val secondNamings = two.matches(Assumptions(second))
         consistentNamings(firstNamings :: secondNamings :: Nil)
       }
     }
@@ -57,17 +57,17 @@ case class UnionSchema(one: AssumptionSchema, two: AssumptionSchema) extends Ass
   override val toString = s"$one ∪ $two"
 }
 case class SingleFormulaSchema(formulaSchema: FormulaSchema) extends AssumptionSchema {
-  override def matches(targ: Set[Formula]) = {
-    if(targ.size != 1) Nil
+  override def matches(targ: Assumptions) = {
+    if(targ.set.size != 1) Nil
     else {
-      val formula = targ.toList(0)
+      val formula = targ.set.toList(0)
       formulaSchema.matches(formula)
     }
   }
 }
 case object EmptySchema extends AssumptionSchema {
-  override def matches(targ: Set[Formula]) = {
-    if (targ.isEmpty) Map[String, Any]() :: Nil
+  override def matches(targ: Assumptions) = {
+    if (targ.set.isEmpty) Map[String, Any]() :: Nil
     else Nil
   }
   override val toString = ""

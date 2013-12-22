@@ -1,50 +1,48 @@
 package deduction
 
-case class Sequent(assumptions: Set[Formula], conclusion: Option[Formula]) {
+case class Sequent(assumptions: Assumptions, conclusion: Option[Formula]) {
   override def toString = {
-    val assumptionsString = assumptions.mkString(", ")
     val conclusionString = conclusion match {
-      case None => ""
+      case None    => ""
       case Some(f) => f.toString
     }
-    s"$assumptionsString ⇒ $conclusionString"
+    s"$assumptions ⇒ $conclusionString"
   }
 }
-object Sequent {
-  val func = ((c: List[AST]) => assumptionsFromAST(c(0)).flatMap { a => Some(new Sequent(a, None)) })
-  private val synchronousSequentProductions = Map[String, (List[AST] => Option[Sequent])](
-    "S -> A ⇒ F" -> (c => (assumptionsFromAST(c(0)), Formula.fromAST(c(2))) match {
-      case (Some(a), Some(f)) => Some(Sequent(a, Some(f)))
-      case _                  => None
-    }),
-    "S -> A ⇒" -> (c => assumptionsFromAST(c(0)) flatMap {
-      a => Some(Sequent(a, None))
-    }),
-    "S -> ⇒ F" -> (c => Formula.fromAST(c(1)) flatMap {
-      f => Some(Sequent(Set(), Some(f)))
-    })).map { case (k, v) => (Production.fromString(k).get, v) }
-  private val synchronousAssumptionProductions = Map[String, (List[AST] => Option[Set[Formula]])](
-    "A -> F" -> (c => Formula.fromAST(c(0)) flatMap {
-      f => Some(Set(f))
-    }),
-    "A -> A , F" -> (c => (assumptionsFromAST(c(0)), Formula.fromAST(c(2))) match {
-      case (Some(a), Some(f)) => Some(a + f)
-      case _                  => None
-    })).map { case (k, v) => (Production.fromString(k).get, v) }
+object Sequent extends Parsable[Sequent] {
+  override val startSymbol = "S"
+  val synchronousProductions = Map[String, (List[AST] => Option[Sequent])](
+    "S -> A ⇒ F" ->
+      (c => for {
+        a <- Assumptions.fromAST(c(0))
+        f <- Formula.fromAST(c(2))
+      } yield Sequent(a, Some(f))),
+    "S -> A ⇒" ->
+      (c => for {
+        a <- Assumptions.fromAST(c(0))
+      } yield Sequent(a, None)),
+    "S -> ⇒ F" ->
+      (c => for {
+        f <- Formula.fromAST(c(1))
+      } yield Sequent(Assumptions(Set()), Some(f)))).map { case (k, v) => (Production.fromString(k).get, v) }
+  override val children = Set[Parsable[_]](Assumptions, Formula)
+}
 
-  val productions = synchronousSequentProductions.keySet ++ synchronousAssumptionProductions.keySet
-  val grammar = new Grammar(Formula.productions ++ productions, Some("S"), Some(Formula.atomSymbol))
-  
-  def fromString(s: String) = grammar.parse(s) flatMap fromAST
-  def fromAST(ast: AST): Option[Sequent] = sequentFromAST(ast)
-  private def assumptionsFromAST(ast: AST): Option[Set[Formula]] = {
-    ast.production flatMap {
-      p => synchronousAssumptionProductions(p)(ast.children)
-    }
-  }
-  private def sequentFromAST(ast: AST): Option[Sequent] = {
-    ast.production flatMap {
-      p => synchronousSequentProductions(p)(ast.children)
-    }
-  }
+case class Assumptions(set: Set[Formula]) {
+  override def toString = set.mkString(", ")
+}
+object Assumptions extends Parsable[Assumptions] {
+  override val startSymbol = "A"
+  val synchronousProductions = Map[String, (List[AST] => Option[Assumptions])](
+    "A -> F" ->
+      (c => for {
+        f <- Formula.fromAST(c(0))
+      } yield Assumptions(Set(f))),
+    "A -> A , F" ->
+      (c => for {
+        a <- fromAST(c(0))
+        f <- Formula.fromAST(c(2))
+      } yield (Assumptions(a.set + f)))).map { case (k, v) => (Production.fromString(k).get, v) }
+  override val children = Set[Parsable[_]](Formula)
+
 }

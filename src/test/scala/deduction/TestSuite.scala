@@ -168,13 +168,13 @@ class TestSuite extends FunSuite {
   goodSequentASTs.foreach(testASTForGrammar(sequentProductions))
 
   val goodSequents = List(
-      Sequent(Set(Atom("p")), Some(Atom("p"))),
-      Sequent(Set(Atom("F")), Some(Atom("F"))),
-      Sequent(Set(), Some(Compound(Or, Atom("p"), Negation(Atom("p"))))),
-      Sequent(Set(), Some(Compound(Or, Atom("F"), Negation(Atom("F"))))),
-      Sequent(Set(Atom("F")), None),
-      Sequent(Set(Atom("F"), Negation(Atom("F"))), None),
-      Sequent(Set(Atom("F"), Atom("G")), Some(Compound(And, Atom("F"), Atom("G")))))
+      Sequent(Assumptions(Set(Atom("p"))), Some(Atom("p"))),
+      Sequent(Assumptions(Set(Atom("F"))), Some(Atom("F"))),
+      Sequent(Assumptions(Set()), Some(Compound(Or, Atom("p"), Negation(Atom("p"))))),
+      Sequent(Assumptions(Set()), Some(Compound(Or, Atom("F"), Negation(Atom("F"))))),
+      Sequent(Assumptions(Set(Atom("F"))), None),
+      Sequent(Assumptions(Set(Atom("F"), Negation(Atom("F")))), None),
+      Sequent(Assumptions(Set(Atom("F"), Atom("G"))), Some(Compound(And, Atom("F"), Atom("G")))))
   
   val symbolicSequents = goodSequentASTs.map(Sequent.fromAST)
   
