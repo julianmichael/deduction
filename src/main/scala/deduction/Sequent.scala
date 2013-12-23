@@ -9,40 +9,38 @@ case class Sequent(assumptions: Assumptions, conclusion: Option[Formula]) {
     s"$assumptions ⇒ $conclusionString"
   }
 }
-object Sequent extends Parsable[Sequent] {
-  override val startSymbol = "S"
-  val synchronousProductions = Map[String, (List[AST] => Option[Sequent])](
-    "S -> A ⇒ F" ->
+case object Sequent extends ComplexParsable[Sequent] {
+  val startSymbol = "S"
+  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[Sequent])] = Map(
+    List(Assumptions, Terminal("⇒"), Formula) ->
       (c => for {
         a <- Assumptions.fromAST(c(0))
         f <- Formula.fromAST(c(2))
       } yield Sequent(a, Some(f))),
-    "S -> A ⇒" ->
+    List(Assumptions, Terminal("⇒")) ->
       (c => for {
         a <- Assumptions.fromAST(c(0))
       } yield Sequent(a, None)),
-    "S -> ⇒ F" ->
+    List(Terminal("⇒"), Formula) ->
       (c => for {
         f <- Formula.fromAST(c(1))
-      } yield Sequent(Assumptions(Set()), Some(f)))).map { case (k, v) => (Production.fromString(k).get, v) }
-  override val children = Set[Parsable[_]](Assumptions, Formula)
+      } yield Sequent(Assumptions(Set()), Some(f))))
 }
 
 case class Assumptions(set: Set[Formula]) {
   override def toString = set.mkString(", ")
 }
-object Assumptions extends Parsable[Assumptions] {
+case object Assumptions extends ComplexParsable[Assumptions] {
   override val startSymbol = "A"
-  val synchronousProductions = Map[String, (List[AST] => Option[Assumptions])](
-    "A -> F" ->
+  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[Assumptions])] = Map(
+    List(Formula) ->
       (c => for {
         f <- Formula.fromAST(c(0))
       } yield Assumptions(Set(f))),
-    "A -> A , F" ->
+    List(Assumptions, Terminal(","), Formula) ->
       (c => for {
         a <- fromAST(c(0))
         f <- Formula.fromAST(c(2))
-      } yield (Assumptions(a.set + f)))).map { case (k, v) => (Production.fromString(k).get, v) }
-  override val children = Set[Parsable[_]](Formula)
+      } yield (Assumptions(a.set + f))))
 
 }

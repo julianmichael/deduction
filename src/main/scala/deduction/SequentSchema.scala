@@ -14,7 +14,6 @@ case class SequentSchema(
       consistentNamings(assumptionNamings :: formulaNamings :: Nil)
     }
   }
-  
   override def toString = {
     val assumptionsString = assumptionSchema.toString
     val conclusionString = conclusion match {
@@ -24,8 +23,49 @@ case class SequentSchema(
     s"$assumptionsString ⇒ $conclusionString"
   }
 }
+case object SequentSchema extends ComplexParsable[SequentSchema] {
+  val startSymbol = "SS"
+  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[SequentSchema])] = Map(
+    List(AssumptionSchema, Terminal("⇒"), FormulaSchema) -> 
+      (c => for {
+        a <- AssumptionSchema.fromAST(c(0))
+        f <- FormulaSchema.fromAST(c(2))
+      } yield SequentSchema(a, Some(f))),
+    List(Terminal("⇒"), FormulaSchema) -> 
+      (c => for {
+        f <- FormulaSchema.fromAST(c(1))
+      } yield SequentSchema(EmptySchema, Some(f))),
+    List(AssumptionSchema, Terminal("⇒")) -> 
+      (c => for {
+        a <- AssumptionSchema.fromAST(c(0))
+      } yield SequentSchema(a, None))
+  )
+}
 
 sealed abstract class AssumptionSchema extends Schema[Assumptions]
+case object AssumptionSchema extends ComplexParsable[AssumptionSchema] {
+  val startSymbol = "AS"
+  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[AssumptionSchema])] = Map(
+    List(Word) -> 
+      (c => for {
+        w <- Word.fromAST(c(0))
+      } yield ArbitrarySetSchema(w)),
+    List(FormulaSchema) -> 
+      (c => for {
+        f <- FormulaSchema.fromAST(c(0))
+      } yield SingleFormulaSchema(f)),
+    List(AssumptionSchema, Terminal(","), FormulaSchema) -> 
+      (c => for {
+        a <- AssumptionSchema.fromAST(c(0))
+        f <- FormulaSchema.fromAST(c(2))
+      } yield AssumptionsPlusFormulaSchema(a, f)),
+    List(AssumptionSchema, Terminal("∪"), AssumptionSchema) -> 
+      (c => for{
+        a1 <- AssumptionSchema.fromAST(c(0))
+        a2 <- AssumptionSchema.fromAST(c(2))
+      } yield UnionSchema(a1, a2))
+  )
+}
 case class ArbitrarySetSchema(name: String) extends AssumptionSchema {
   override def matches(targ: Assumptions) = Map(name -> targ) :: Nil
   override val toString = name

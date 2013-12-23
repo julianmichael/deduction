@@ -14,23 +14,23 @@ sealed abstract class Formula {
     case Compound(op, f, g) => s"($f $op $g)"
   }
 }
-object Formula extends Parsable[Formula] {
-  override val startSymbol = "F"
-  override val openSymbols = Set("a")
-  override val children = Set[Parsable[_]](Connective)
-  val synchronousProductions = Map[String, (List[AST] => Option[Formula])](
-    "F -> a" ->
-      (c => Some(Atom((c(0).children(0).label)))),
-    "F -> ¬ F" ->
+case object Formula extends ComplexParsable[Formula] {
+  val startSymbol = "F"
+  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[Formula])] = Map(
+    List(Word) ->
+      (c => for {
+        w <- Word.fromAST(c(0))
+      } yield Atom(w)),
+    List(Terminal("¬"), Formula) ->
       (c => for {
         f <- fromAST(c(1))
       } yield Negation(f)),
-    "F -> ( F C F )" ->
+    List(Terminal("("), Formula, Connective, Formula, Terminal(")")) ->
       (c => for {
         f <- fromAST(c(1))
         op <- Connective.fromAST(c(2))
         g <- fromAST(c(3))
-      } yield Compound(op, f, g))).map { case (k, v) => (Production.fromString(k).get, v) }
+      } yield Compound(op, f, g)))
 }
 
 // the types of formula
@@ -40,19 +40,29 @@ case class Compound(c: Connective, f: Formula, g: Formula) extends Formula
 
 // the propositional connectives
 sealed abstract class Connective
-object Connective extends Parsable[Connective] {
+case object Connective extends ComplexParsable[Connective] {
   override val startSymbol = "C"
-  val synchronousProductions = Map[String, (List[AST] => Option[Connective])](
-    "C -> ∧" -> (c => if (c(0).label == "∧") Some(And) else None),
-    "C -> ∨" -> (c => if (c(0).label == "∨") Some(Or) else None),
-    "C -> →" -> (c => if (c(0).label == "→") Some(Implies) else None)).map { case (k, v) => (Production.fromString(k).get, v) }
-  override val children = Set[Parsable[_]]()
+  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[Connective])] = Map(
+    List(Terminal(And.toString)) ->
+      (c => for {
+        op <- Terminal(And.toString).fromAST(c(0))
+      } yield And),
+    List(Terminal(Or.toString)) ->
+      (c => for {
+        op <- Terminal(Or.toString).fromAST(c(0))
+      } yield Or),
+    List(Terminal(Implies.toString)) ->
+      (c => for {
+        op <- Terminal(Implies.toString).fromAST(c(0))
+      } yield Implies))
 
+  // as of yet unused
   private val stringMap: Map[String, Connective] = Map(
     "∧" -> And,
     "∨" -> Or,
     "→" -> Implies)
 }
+
 case object And extends Connective {
   override val toString = "∧"
 }
