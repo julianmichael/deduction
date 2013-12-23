@@ -10,6 +10,9 @@ class TestSuite extends FunSuite {
 
   def testParsableWithParameters[A](params: ParsableTestParameters[A])(parsable: Parsable[A]) = {
     import params._
+    test(s"$parsable children") {
+      assert(parsable.children === children)
+    }
     test(s"$parsable grammar productions") {
       assert(parsable.grammar.productions === productions)
     }
@@ -84,32 +87,8 @@ class TestSuite extends FunSuite {
   testParsableWithParameters(AssumptionsTestParameters)(Assumptions)
   testParsableWithParameters(SequentTestParameters)(Sequent)
 
-  // ----- FormulaSchema -----
-  val orSchemaString = "((F ∨ G) ∨ F)"
-  val orSchema = FormulaSchema.fromString(orSchemaString)
-  val correctOrSchema =
-    CompoundSchema(
-      SpecifiedConnectiveSchema(Or),
-      CompoundSchema(
-        SpecifiedConnectiveSchema(Or),
-        ArbitraryFormulaSchema("F"),
-        ArbitraryFormulaSchema("G")),
-      ArbitraryFormulaSchema("F"))
-
-  test("Or-schema parses correctly") {
-    assert(orSchema === Some(correctOrSchema))
-  }
-
-  val goodOrFormulaStrings = List(
-    "((p ∨ q) ∨ p)", // yes
-    "((¬p ∨ q) ∨ ¬p)", // yes
-    "(((p ∧ q) ∨ q) ∨ (p ∧ q))", // yes
-    "((¬(p ∧ q) ∨ q) ∨ ¬(p ∧ q))" // yes
-    )
-  val badOrFormulaStrings = List(
-    "((p ∨ q) ∨ q)", // no
-    "((p ∧ q) ∨ p)" // no
-    )
-  val goodOrFormulas = goodOrFormulaStrings.map(Formula.fromString)
-  goodOrFormulas map (_ map correctOrSchema.matches) map println
+  testParsableWithParameters(ConnectiveSchemaTestParameters)(ConnectiveSchema)
+  testParsableWithParameters(FormulaSchemaTestParameters)(FormulaSchema)
+  testParsableWithParameters(AssumptionSchemaTestParameters)(AssumptionSchema)
+  testParsableWithParameters(SequentSchemaTestParameters)(SequentSchema)
 }

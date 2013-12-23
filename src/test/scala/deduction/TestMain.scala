@@ -1,17 +1,20 @@
 package deduction
 
 object TestMain extends App {
-  
-  
-//  val formulas = orFormulas.flatMap(Formula.fromString)
-//  formulas.foreach(println)
-//  println("----------")
-//  val namings = formulas.flatMap(orSchema.matches)
-//  namings.foreach(println)
-//  println("----------")
-//  orFormulas.map(Formula.fromString).map(_.flatMap(x => Some(orSchema.matches(x)))).map(println)
 
-  println("----------")
+  val goodOrFormulaStrings = List(
+    "((p ∨ q) ∨ p)", // yes
+    "((¬p ∨ q) ∨ ¬p)", // yes
+    "(((p ∧ q) ∨ q) ∨ (p ∧ q))", // yes
+    "((¬(p ∧ q) ∨ q) ∨ ¬(p ∧ q))" // yes
+    )
+  val badOrFormulaStrings = List(
+    "((p ∨ q) ∨ q)", // no
+    "((p ∧ q) ∨ p)" // no
+    )
+  val goodOrFormulas = goodOrFormulaStrings.map(Formula.fromString)
+  goodOrFormulas map (_ map FormulaSchemaTestParameters.goodSymbolics.head.matches) map println
+
   val axiom1 =
     SequentSchema(
       SingleFormulaSchema(
@@ -54,4 +57,15 @@ object TestMain extends App {
   println(s"Conclusion:\t$conclusion")
   val deduction = Deduction(premises, conclusion)
   println(s"Matching:\t${conjunctionIntroduction.matches(deduction)}")
+  println("----------")
+  val ruleFromString = for {
+    a1 <- SequentSchema.fromString("Γ ⇒ F")
+    a2 <- SequentSchema.fromString("Δ ⇒ G")
+    conc <- SequentSchema.fromString("Γ ∪ Δ ⇒ (F ∧ G)")
+  } yield DeductionRule(List(a1, a1), conc)
+  println(conjunctionIntroduction)
+  println(ruleFromString)
+  println(Some(conjunctionIntroduction) == ruleFromString)
+  
+  println(SequentSchema.grammar.parsings("Γ ⇒ F"))
 }

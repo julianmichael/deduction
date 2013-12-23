@@ -1,6 +1,7 @@
 package deduction
 
 trait ParsableTestParameters[A] {
+  def children: Set[Parsable[_]]
   def nonterminals: Set[String]
   def terminals: Set[String]
   def productions: Set[Production]

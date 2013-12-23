@@ -1,6 +1,11 @@
 package deduction
 
 object ConnectiveTestParameters extends ParsableTestParameters[Connective] {
+  val children = Set[Parsable[_]](
+      Terminal("∧"),
+      Terminal("∨"),
+      Terminal("→")
+  )
   val nonterminals = Set("C")
   val terminals = Set("∧", "∨", "→")
   val productions = Set[Production](

@@ -1,6 +1,12 @@
 package deduction
 
 object AssumptionsTestParameters extends ParsableTestParameters[Assumptions] {
+  val children = Set[Parsable[_]](
+      Formula,
+      Word,
+      Terminal(",")) ++
+      FormulaTestParameters.children ++
+      ConnectiveTestParameters.children
   val nonterminals = Set("A") ++ FormulaTestParameters.nonterminals
   val terminals = Set(",") ++ FormulaTestParameters.terminals
   val productions = Set[Production](
