@@ -1,4 +1,7 @@
-package deduction
+package propositional
+
+import parsing._
+import propositional._
 
 object SequentTestParameters extends ParsableTestParameters[Sequent] {
   val children = Set[Parsable[_]](

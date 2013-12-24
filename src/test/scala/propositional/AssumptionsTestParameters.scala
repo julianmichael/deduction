@@ -1,4 +1,7 @@
-package deduction
+package propositional
+
+import parsing._
+import propositional._
 
 object AssumptionsTestParameters extends ParsableTestParameters[Assumptions] {
   val children = Set[Parsable[_]](

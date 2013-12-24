@@ -1,4 +1,8 @@
-package deduction 
+package propositional.schema 
+
+import parsing._
+import propositional._
+import deduction.Schema
 
 sealed abstract class FormulaSchema extends Schema[Formula]
 case object FormulaSchema extends ComplexParsable[FormulaSchema] {
@@ -51,27 +55,4 @@ case class CompoundSchema(c: ConnectiveSchema, f: FormulaSchema, g: FormulaSchem
     case _ => Nil
   }
   override val toString = s"($f $c $g)"
-}
-
-sealed abstract class ConnectiveSchema extends Schema[Connective]
-case object ConnectiveSchema extends ComplexParsable[ConnectiveSchema] {
-  val startSymbol = "CS"
-  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[ConnectiveSchema])] = Map(
-    List(Word) -> 
-      (c => for {
-        w <- Word.fromAST(c(0))
-      } yield ArbitraryConnectiveSchema(w)),
-    List(Connective) -> 
-      (c => for {
-        c <- Connective.fromAST(c(0))
-      } yield SpecifiedConnectiveSchema(c))
-  )
-}
-case class ArbitraryConnectiveSchema(name: String) extends ConnectiveSchema {
-  override def matches(targ: Connective) = Map(name -> targ) :: Nil
-  override val toString = name
-}
-case class SpecifiedConnectiveSchema(c: Connective) extends ConnectiveSchema {
-  def matches(targ: Connective) = if (c.equals(targ)) Map[String, Any]() :: Nil else Nil
-  override val toString = c.toString
 }

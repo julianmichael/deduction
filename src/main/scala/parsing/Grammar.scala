@@ -1,5 +1,6 @@
-package deduction
+package parsing
 
+import util.Memoize
 // encodes a single production in a grammar. Also gives us
 // a convenient String representation.
 trait Production {

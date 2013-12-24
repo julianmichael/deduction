@@ -1,4 +1,8 @@
-package deduction
+package propositional.schema
+
+import parsing._
+import propositional._
+import propositional.schema._
 
 object FormulaSchemaTestParameters extends ParsableTestParameters[FormulaSchema] {
   val children = Set[Parsable[_]](

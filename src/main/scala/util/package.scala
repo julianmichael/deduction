@@ -1,4 +1,5 @@
-package object deduction {
+import scala.collection.mutable
+package object util {
   /*
    * Used to memoize a deterministic function of 1 param.
    * 

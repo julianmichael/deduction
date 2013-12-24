@@ -1,4 +1,7 @@
-package deduction
+package propositional
+
+import parsing._
+import propositional._
 
 object ConnectiveTestParameters extends ParsableTestParameters[Connective] {
   val children = Set[Parsable[_]](

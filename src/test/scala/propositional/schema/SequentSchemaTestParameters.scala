@@ -1,4 +1,8 @@
-package deduction
+package propositional.schema
+
+import parsing._
+import propositional._
+import propositional.schema._
 
 object SequentSchemaTestParameters extends ParsableTestParameters[SequentSchema] {
   val children = Set[Parsable[_]](
@@ -29,9 +33,22 @@ object SequentSchemaTestParameters extends ParsableTestParameters[SequentSchema]
     AssumptionSchemaTestParameters.cnfProductions ++
     FormulaSchemaTestParameters.cnfProductions
   val goodStrings = List(
-    "F ⇒ F")
-  val goodTokenizations = Nil
-  val goodASTs = Nil
+    "|F ⇒ F")
+  val goodTokenizations = List(
+    List("|", "F", "⇒", "F")  
+  )
+  val goodASTs = List(
+    BasicAST("SS", List(
+        BasicAST("AS", List(
+            BasicAST("|", Nil),
+            BasicAST("FS", List(
+                BasicAST("w", List(
+                    BasicAST("F", Nil))))))),
+        BasicAST("⇒", Nil),
+        BasicAST("FS", List(
+            BasicAST("w", List(
+                BasicAST("F", Nil)))))))
+  )
   val goodSymbolics = List(
     SequentSchema(
       SingleFormulaSchema(

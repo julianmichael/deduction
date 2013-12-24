@@ -1,4 +1,4 @@
-package deduction
+package parsing
 
 trait ParsableTestParameters[A] {
   def children: Set[Parsable[_]]

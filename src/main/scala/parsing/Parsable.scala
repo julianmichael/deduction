@@ -1,28 +1,32 @@
-package deduction
-/*
- * Parsable is used to mix in to a class or object for
- * easy parsing. It only requires that 
- */
+package parsing
 
-sealed trait Parsable[+A] {
+/*
+ * Parsable contains most of the functionality and framework for any object
+ * that we want to be able to parse from a string, so I make most of the notes
+ * here. They may seem slightly inaccurate because any object outside this
+ * source file will have to mix in ComplexParsable and make use of the Terminal
+ * and Word classes for their children to give them the extra functionality that
+ * the ComplexParsable trait restricts them from using. However, ComplexParsable
+ * makes the process extremely quick and simple.
+ */
+sealed trait Parsable[A] {
   // ----- Must implement -----
   def startSymbol: String
 
   // This mapping gives us all of the productions for this particular
   // nonterminal, and paired with them are methods to construct one
-  // of this nonterminal-associated Parsable from its constituent parts.
+  // of this nonterminal-associated `A` from its constituent parts.
   def synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[A])]
 
-  // ----- Optional to implement -----
+  // ----- Cannot be overridden -----
   // This may be overridden to specify any terminal symbols of a type that
   // correspond to very "open classes" of words--they may produce any
   // contiguous character sequence that does not consist of the other
-  // terminal symbols in the grammar.
+  // terminal symbols in the grammar. This is ONLY actually used in Word, below.
   // ASSUMPTION: The open symbols of this Parsable are not (non-open) terminal
   // symbols in the grammar of any of its children.
   def openSymbols: Set[String] = Set()
 
-  // ----- Cannot be overridden -----
   // List of all of the Parsables that are components of this one (used in productions)
   final def children: Set[Parsable[_]] = {
     val topLayer = synchronousProductions.keySet.flatten - this
@@ -32,7 +36,7 @@ sealed trait Parsable[+A] {
 
   // automatically determine the productions to give the grammar from the
   // synchronous productions of the Parsable and its children
-  def processedSynchronousProductions: Map[Production, (List[AST] => Option[A])] =
+  final def processedSynchronousProductions: Map[Production, (List[AST] => Option[A])] =
     synchronousProductions.map {
       case (k, v) => (RawProduction(startSymbol, k.map(_.startSymbol)), v)
     }
@@ -60,6 +64,7 @@ sealed trait Parsable[+A] {
  * there. The bulk of objects will implement this one.
  */
 trait ComplexParsable[A] extends Parsable[A] {
+  final override val openSymbols = Set[String]()
   final def fromAST(ast: AST): Option[A] = {
     for {
       p <- ast.production

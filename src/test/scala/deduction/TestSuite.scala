@@ -1,9 +1,19 @@
 package deduction
 
 import org.scalatest.FunSuite
-
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import parsing._
+import propositional._
+import propositional.schema._
+import propositional.SequentTestParameters
+import propositional.FormulaTestParameters
+import propositional.AssumptionsTestParameters
+import propositional.ConnectiveTestParameters
+import propositional.schema.FormulaSchemaTestParameters
+import propositional.schema.ConnectiveSchemaTestParameters
+import propositional.schema.SequentSchemaTestParameters
+import propositional.schema.AssumptionSchemaTestParameters
 
 @RunWith(classOf[JUnitRunner])
 class TestSuite extends FunSuite {
@@ -60,7 +70,7 @@ class TestSuite extends FunSuite {
           }
         }
       }
-      ast.children.foreach(testASTSanity)
+//      ast.children.foreach(testASTSanity)
     }
 
     goodASTs.foreach(testASTSanity)
