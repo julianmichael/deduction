@@ -3,12 +3,20 @@
 .classpath
 .project
 .settings
-.settings
+.scala_dependencies
+.worksheet
 # sbt stuff
-target
+target/
+.lib/
+dist/*
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
 # compiled stuff and caches
 **.class
 **.cache
+**.log
 .history
 # swap files
 *.swp
