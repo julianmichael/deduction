@@ -1,3 +1,4 @@
 [submodule "lib/parsing"]
 	path = lib/parsing
 	url = https://github.com/julianmichael/parsing.git
+	branch = master
