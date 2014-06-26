@@ -4,6 +4,11 @@ import parsing._
 import propositional._
 import propositional.schema._
 
+class AssumptionSchemaTestSuite extends ParsableTestSuite[AssumptionSchema] {
+  val parsable = AssumptionSchema
+  val parameters = AssumptionSchemaTestParameters
+}
+
 object AssumptionSchemaTestParameters extends ParsableTestParameters[AssumptionSchema] {
   val children = Set[Parsable[_]](
     FormulaSchema,
@@ -14,9 +19,9 @@ object AssumptionSchemaTestParameters extends ParsableTestParameters[AssumptionS
   val nonterminals = 
     Set("AS") ++
     FormulaSchemaTestParameters.nonterminals
-  val terminals =
+  val tokens =
     Set(",", "∪", "|") ++
-    FormulaSchemaTestParameters.terminals
+    FormulaSchemaTestParameters.tokens
   val productions = Set[Production](
     RawProduction("AS", List("w")),
     RawProduction("AS", List("|", "FS")),
@@ -31,8 +36,5 @@ object AssumptionSchemaTestParameters extends ParsableTestParameters[AssumptionS
     Binary("AS", "AS", "{∪+AS}"),
     ChunkedBinary("{∪+AS}", "∪", "AS")) ++
     FormulaSchemaTestParameters.cnfProductions
-  val goodStrings = Nil
-  val goodTokenizations = Nil
-  val goodASTs = Nil
-  val goodSymbolics = Nil
+  val testParses = Nil
 }

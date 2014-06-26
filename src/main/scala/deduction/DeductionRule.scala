@@ -44,74 +44,74 @@ case class DeductionRule(
 object DeductionRule {
   val naturalDeductionAxiomSchemas = Map[String, SequentSchema](
     "Identity" -> (for {
-      ax <- SequentSchema.fromString("|F ⇒ F")
+      ax <- SequentSchema.fromStringUnique("|F ⇒ F")
     } yield ax).get,
     "Excluded Middle" -> (for {
-      ax <- SequentSchema.fromString("⇒ (F ∨ ¬F)")
+      ax <- SequentSchema.fromStringUnique("⇒ (F ∨ ¬F)")
     } yield ax).get)
   val naturalDeductionRules = Map[String, DeductionRule](
     "∧I" -> (for {
-      p1 <- SequentSchema.fromString("Γ ⇒ F")
-      p2 <- SequentSchema.fromString("Δ ⇒ G")
-      conc <- SequentSchema.fromString("Γ ∪ Δ ⇒ (F ∧ G)")
+      p1 <- SequentSchema.fromStringUnique("Γ ⇒ F")
+      p2 <- SequentSchema.fromStringUnique("Δ ⇒ G")
+      conc <- SequentSchema.fromStringUnique("Γ ∪ Δ ⇒ (F ∧ G)")
     } yield DeductionRule(List(p1, p2), conc)).get,
     "∨I1" -> (for {
-      p <- SequentSchema.fromString("Γ ⇒ F")
-      conc <- SequentSchema.fromString("Γ ⇒ (F ∨ G)")
+      p <- SequentSchema.fromStringUnique("Γ ⇒ F")
+      conc <- SequentSchema.fromStringUnique("Γ ⇒ (F ∨ G)")
     } yield DeductionRule(List(p), conc)).get,
     "∨I2" -> (for {
-      p <- SequentSchema.fromString("Γ ⇒ G")
-      conc <- SequentSchema.fromString("Γ ⇒ (F ∨ G)")
+      p <- SequentSchema.fromStringUnique("Γ ⇒ G")
+      conc <- SequentSchema.fromStringUnique("Γ ⇒ (F ∨ G)")
     } yield DeductionRule(List(p), conc)).get,
     "→I" -> (for {
-      p <- SequentSchema.fromString("Γ, F ⇒ G")
-      conc <- SequentSchema.fromString("Γ ⇒ (F → G)")
+      p <- SequentSchema.fromStringUnique("Γ, F ⇒ G")
+      conc <- SequentSchema.fromStringUnique("Γ ⇒ (F → G)")
     } yield DeductionRule(List(p), conc)).get,
     "¬I" -> (for {
-      p <- SequentSchema.fromString("Γ, F ⇒")
-      conc <- SequentSchema.fromString("Γ ⇒ ¬F")
+      p <- SequentSchema.fromStringUnique("Γ, F ⇒")
+      conc <- SequentSchema.fromStringUnique("Γ ⇒ ¬F")
     } yield DeductionRule(List(p), conc)).get,
     "∧E1" -> (for {
-      p <- SequentSchema.fromString("Γ ⇒ (F ∧ G)")
-      conc <- SequentSchema.fromString("Γ ⇒ F")
+      p <- SequentSchema.fromStringUnique("Γ ⇒ (F ∧ G)")
+      conc <- SequentSchema.fromStringUnique("Γ ⇒ F")
     } yield DeductionRule(List(p), conc)).get,
     "∧E2" -> (for {
-      p <- SequentSchema.fromString("Γ ⇒ (F ∧ G)")
-      conc <- SequentSchema.fromString("Γ ⇒ G")
+      p <- SequentSchema.fromStringUnique("Γ ⇒ (F ∧ G)")
+      conc <- SequentSchema.fromStringUnique("Γ ⇒ G")
     } yield DeductionRule(List(p), conc)).get,
     "∨E1" -> (for {
-      p1 <- SequentSchema.fromString("Γ ⇒ (F ∨ G)")
-      p2 <- SequentSchema.fromString("Δ1, F ⇒ Σ")
-      p3 <- SequentSchema.fromString("Δ2, G ⇒ Σ")
-      conc <- SequentSchema.fromString("Γ ∪ Δ1 ∪ Δ2 ⇒ Σ")
+      p1 <- SequentSchema.fromStringUnique("Γ ⇒ (F ∨ G)")
+      p2 <- SequentSchema.fromStringUnique("Δ1, F ⇒ Σ")
+      p3 <- SequentSchema.fromStringUnique("Δ2, G ⇒ Σ")
+      conc <- SequentSchema.fromStringUnique("Γ ∪ Δ1 ∪ Δ2 ⇒ Σ")
     } yield DeductionRule(List(p1, p2, p3), conc)).get,
     "∨E2" -> (for {
-      p1 <- SequentSchema.fromString("Γ ⇒ (F ∨ G)")
-      p2 <- SequentSchema.fromString("Δ1, F ⇒")
-      p3 <- SequentSchema.fromString("Δ2, G ⇒")
-      conc <- SequentSchema.fromString("Γ ∪ Δ1 ∪ Δ2 ⇒")
+      p1 <- SequentSchema.fromStringUnique("Γ ⇒ (F ∨ G)")
+      p2 <- SequentSchema.fromStringUnique("Δ1, F ⇒")
+      p3 <- SequentSchema.fromStringUnique("Δ2, G ⇒")
+      conc <- SequentSchema.fromStringUnique("Γ ∪ Δ1 ∪ Δ2 ⇒")
     } yield DeductionRule(List(p1, p2, p3), conc)).get,
     "→E" -> (for {
-      p1 <- SequentSchema.fromString("Γ ⇒ F")
-      p2 <- SequentSchema.fromString("Δ ⇒ (F → G)")
-      conc <- SequentSchema.fromString("Γ ∪ Δ ⇒ G")
+      p1 <- SequentSchema.fromStringUnique("Γ ⇒ F")
+      p2 <- SequentSchema.fromStringUnique("Δ ⇒ (F → G)")
+      conc <- SequentSchema.fromStringUnique("Γ ∪ Δ ⇒ G")
     } yield DeductionRule(List(p1, p2), conc)).get,
     "¬E" -> (for {
-      p1 <- SequentSchema.fromString("Γ ⇒ F")
-      p2 <- SequentSchema.fromString("Δ ⇒ ¬F")
-      conc <- SequentSchema.fromString("Γ ∪ Δ ⇒")
+      p1 <- SequentSchema.fromStringUnique("Γ ⇒ F")
+      p2 <- SequentSchema.fromStringUnique("Δ ⇒ ¬F")
+      conc <- SequentSchema.fromStringUnique("Γ ∪ Δ ⇒")
     } yield DeductionRule(List(p1, p2), conc)).get,
     "C" -> (for {
-      p <- SequentSchema.fromString("Γ ⇒")
-      conc <- SequentSchema.fromString("Γ ⇒ F")
+      p <- SequentSchema.fromStringUnique("Γ ⇒")
+      conc <- SequentSchema.fromStringUnique("Γ ⇒ F")
     } yield DeductionRule(List(p), conc)).get,
     "W1" -> (for {
-      p <- SequentSchema.fromString("Γ ⇒ Σ")
-      conc <- SequentSchema.fromString("Γ ∪ Δ ⇒ Σ")
+      p <- SequentSchema.fromStringUnique("Γ ⇒ Σ")
+      conc <- SequentSchema.fromStringUnique("Γ ∪ Δ ⇒ Σ")
     } yield DeductionRule(List(p), conc)).get,
     "W2" -> (for {
-      p <- SequentSchema.fromString("Γ ⇒")
-      conc <- SequentSchema.fromString("Γ ∪ Δ ⇒")
+      p <- SequentSchema.fromStringUnique("Γ ⇒")
+      conc <- SequentSchema.fromStringUnique("Γ ∪ Δ ⇒")
     } yield DeductionRule(List(p), conc)).get)
   val naturalDeductionRules2 = Map[String, DeductionRule](
     "∧I" -> DeductionRule(

@@ -4,6 +4,11 @@ import parsing._
 import propositional._
 import propositional.schema._
 
+class FormulaSchemaTestSuite extends ParsableTestSuite[FormulaSchema] {
+  val parsable = FormulaSchema
+  val parameters = FormulaSchemaTestParameters
+}
+
 object FormulaSchemaTestParameters extends ParsableTestParameters[FormulaSchema] {
   val children = Set[Parsable[_]](
     ConnectiveSchema,
@@ -15,9 +20,9 @@ object FormulaSchemaTestParameters extends ParsableTestParameters[FormulaSchema]
   val nonterminals =
     Set("FS") ++
       ConnectiveSchemaTestParameters.nonterminals
-  val terminals =
+  val tokens =
     Set("(", ")", "¬") ++
-      ConnectiveSchemaTestParameters.terminals
+      ConnectiveSchemaTestParameters.tokens
   val productions = Set[Production](
     RawProduction("FS", List("w")),
     RawProduction("FS", List("¬", "FS")),
@@ -31,16 +36,13 @@ object FormulaSchemaTestParameters extends ParsableTestParameters[FormulaSchema]
     ChunkedBinary("{CS+FS+)}", "CS", "{FS+)}"),
     ChunkedBinary("{FS+)}", "FS", ")")) ++
     ConnectiveSchemaTestParameters.cnfProductions
-  val goodStrings = List(
-    "((F ∨ G) ∨ F)")
-  val goodTokenizations = Nil
-  val goodASTs = Nil
-  val goodSymbolics = List(
-    CompoundSchema(
+  val testParses = List(
+    TestParse[FormulaSchema](Some("((F ∨ G) ∨ F)"), None, None, 
+    Some(CompoundSchema(
       SpecifiedConnectiveSchema(Or),
       CompoundSchema(
         SpecifiedConnectiveSchema(Or),
         ArbitraryFormulaSchema("F"),
         ArbitraryFormulaSchema("G")),
-      ArbitraryFormulaSchema("F")))
+      ArbitraryFormulaSchema("F")))))
 }

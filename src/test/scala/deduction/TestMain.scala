@@ -21,10 +21,10 @@ object TestMain extends App {
     "((p ∧ q) ∨ p)" // no
     )
   val goodOrFormulas = goodOrFormulaStrings.map(Formula.fromString)
-  goodOrFormulas map (_ map FormulaSchemaTestParameters.goodSymbolics.head.matches) map println
+  goodOrFormulas map (_ map FormulaSchemaTestParameters.testParses.head.symbolic.get.matches) map println
 
-  val axiom1 = SequentSchemaTestParameters.goodSymbolics.head
-  val axiom1FromString = SequentSchema.fromString("|F ⇒ F").get
+  val axiom1 = SequentSchemaTestParameters.testParses.head.symbolic.get
+  val axiom1FromString = SequentSchema.fromStringUnique("|F ⇒ F").get
   println("-----")
   println(axiom1)
   println(axiom1FromString)
@@ -61,7 +61,7 @@ object TestMain extends App {
   val conjunctionIntroduction = DeductionRule.naturalDeductionRules("∧I")
   println(s"Rule:\t\t$conjunctionIntroduction")
   println(s"Premises:\t${premises.mkString(", ")}")
-  val conclusion = Sequent.fromString("p, q ⇒ (p ∧ q)").get
+  val conclusion = Sequent.fromStringUnique("p, q ⇒ (p ∧ q)").get
   println(s"Conclusion:\t$conclusion")
   val deduction = Deduction(premises, conclusion)
   println(s"Matching:\t${conjunctionIntroduction.matches(deduction)}")
@@ -75,7 +75,6 @@ object TestMain extends App {
   println(ruleFromString)
   println(Some(conjunctionIntroduction) == ruleFromString)
   
-  println(SequentSchema.grammar.parsings("Γ ⇒ F"))
   println("--------------------")
   val proofString =
     """(p ∧ ¬p) ⇒ (p ∧ ¬p)
