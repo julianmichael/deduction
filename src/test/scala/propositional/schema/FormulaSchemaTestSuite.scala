@@ -37,12 +37,15 @@ object FormulaSchemaTestParameters extends ParsableTestParameters[FormulaSchema]
     ChunkedBinary("{FS+)}", "FS", ")")) ++
     ConnectiveSchemaTestParameters.cnfProductions
   val testParses = List(
-    TestParse[FormulaSchema](Some("((F ∨ G) ∨ F)"), None, None, 
-    Some(CompoundSchema(
-      SpecifiedConnectiveSchema(Or),
-      CompoundSchema(
+    TestParse[FormulaSchema](
+      Some("((F ∨ G) ∨ F)"),
+      None,
+      None, 
+      Some(CompoundSchema(
         SpecifiedConnectiveSchema(Or),
-        ArbitraryFormulaSchema("F"),
-        ArbitraryFormulaSchema("G")),
-      ArbitraryFormulaSchema("F")))))
+        CompoundSchema(
+          SpecifiedConnectiveSchema(Or),
+          ArbitraryFormulaSchema("F"),
+          ArbitraryFormulaSchema("G")),
+        ArbitraryFormulaSchema("F")))))
 }

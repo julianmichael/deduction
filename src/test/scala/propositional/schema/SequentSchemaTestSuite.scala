@@ -38,23 +38,21 @@ object SequentSchemaTestParameters extends ParsableTestParameters[SequentSchema]
     AssumptionSchemaTestParameters.cnfProductions ++
     FormulaSchemaTestParameters.cnfProductions
   val testParses = List(
-    TestParse[SequentSchema](Some("|F ⇒ F"), Some(List("|", "F", "⇒", "F")),
+    TestParse[SequentSchema](
+      Some("|F ⇒ F"),
+      Some(List("|", "F", "⇒", "F")),
       Some(
-        BasicAST("SS", List(
-            BasicAST("AS", List(
-                BasicAST("|", Nil),
-                BasicAST("FS", List(
-                    BasicAST("w", List(
-                        BasicAST("F", Nil))))))),
-            BasicAST("⇒", Nil),
-            BasicAST("FS", List(
-                BasicAST("w", List(
-                    BasicAST("F", Nil)))))))
-      ),
+        BasicASTInternal("SS", List(
+            BasicASTInternal("AS", List(
+                BasicASTInternal("|", List(BasicASTLeaf("|"))),
+                BasicASTInternal("FS", List(
+                    BasicASTInternal("w", List(BasicASTLeaf("F"))))))),
+            BasicASTInternal("⇒", List(BasicASTLeaf("⇒"))),
+            BasicASTInternal("FS", List(
+                BasicASTInternal("w", List(BasicASTLeaf("F")))))))),
       Some(
         SequentSchema(
           SingleFormulaSchema(
             ArbitraryFormulaSchema("F")),
-          Some(ArbitraryFormulaSchema("F")))
-      )))
+          Some(ArbitraryFormulaSchema("F"))))))
 }

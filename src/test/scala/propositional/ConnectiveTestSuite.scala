@@ -24,7 +24,19 @@ object ConnectiveTestParameters extends ParsableTestParameters[Connective] {
     Unary("C", "∨"),
     Unary("C", "→"))
   val testParses = List(
-    TestParse[Connective](Some("∧"), None, Some(BasicAST("C", List(BasicAST("∧", List(BasicAST("∧", Nil)))))), Some(And)),
-    TestParse[Connective](Some("∨"), None, Some(BasicAST("C", List(BasicAST("∨", List(BasicAST("∨", Nil)))))), Some(Or)),
-    TestParse[Connective](Some("→"), None, Some(BasicAST("C", List(BasicAST("→", List(BasicAST("→", Nil)))))), Some(Implies)))
+    TestParse[Connective](
+      Some("∧"),
+      None,
+      Some(BasicASTInternal("C", List(BasicASTInternal("∧", List(BasicASTLeaf("∧")))))),
+      Some(And)),
+    TestParse[Connective](
+      Some("∨"),
+      None,
+      Some(BasicASTInternal("C", List(BasicASTInternal("∨", List(BasicASTLeaf("∨")))))),
+      Some(Or)),
+    TestParse[Connective](
+      Some("→"),
+      None,
+      Some(BasicASTInternal("C", List(BasicASTInternal("→", List(BasicASTLeaf("→")))))),
+      Some(Implies)))
 }

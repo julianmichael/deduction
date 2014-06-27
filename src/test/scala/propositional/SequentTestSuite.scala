@@ -32,11 +32,40 @@ object SequentTestParameters extends ParsableTestParameters[Sequent] {
     AssumptionsTestParameters.cnfProductions ++
     FormulaTestParameters.cnfProductions
   val testParses = List(
-    TestParse[Sequent](Some("p ⇒ p"), None, None, Some(Sequent(Assumptions(Set(Atom("p"))), Some(Atom("p"))))),
-    TestParse[Sequent](Some("F ⇒ F"), None, None, Some(Sequent(Assumptions(Set(Atom("F"))), Some(Atom("F"))))),
-    TestParse[Sequent](Some("⇒ (p ∨ ¬p)"), None, None, Some(Sequent(Assumptions(Set()), Some(Compound(Or, Atom("p"), Negation(Atom("p"))))))),
-    TestParse[Sequent](Some("⇒ (F ∨ ¬F)"), None, None, Some(Sequent(Assumptions(Set()), Some(Compound(Or, Atom("F"), Negation(Atom("F"))))))),
-    TestParse[Sequent](Some("F ⇒"), None, None, Some(Sequent(Assumptions(Set(Atom("F"))), None))),
-    TestParse[Sequent](Some("F, ¬F ⇒"), None, None, Some(Sequent(Assumptions(Set(Atom("F"), Negation(Atom("F")))), None))),
-    TestParse[Sequent](Some("F, G ⇒ (F ∧ G)"), None, None, Some(Sequent(Assumptions(Set(Atom("F"), Atom("G"))), Some(Compound(And, Atom("F"), Atom("G")))))))
+    TestParse[Sequent](
+      Some("p ⇒ p"),
+      None,
+      None,
+      Some(Sequent(Assumptions(Set(Atom("p"))), Some(Atom("p"))))),
+    TestParse[Sequent](
+      Some("F ⇒ F"),
+      None,
+      None,
+      Some(Sequent(Assumptions(Set(Atom("F"))), Some(Atom("F"))))),
+    TestParse[Sequent](
+      Some("⇒ (p ∨ ¬p)"),
+      None,
+      None,
+      Some(Sequent(Assumptions(Set()), Some(Compound(Or, Atom("p"), Negation(Atom("p"))))))),
+    TestParse[Sequent](
+      Some("⇒ (F ∨ ¬F)"),
+      None,
+      None,
+      Some(Sequent(Assumptions(Set()), Some(Compound(Or, Atom("F"), Negation(Atom("F"))))))),
+    TestParse[Sequent](
+      Some("F ⇒"),
+      None,
+      None,
+      Some(Sequent(Assumptions(Set(Atom("F"))), None))),
+    TestParse[Sequent](
+      Some("F, ¬F ⇒"),
+      None,
+      None,
+      Some(Sequent(Assumptions(Set(Atom("F"), Negation(Atom("F")))), None))),
+    TestParse[Sequent](
+      Some("F, G ⇒ (F ∧ G)"),
+      None,
+      None,
+      Some(Sequent(Assumptions(Set(Atom("F"), Atom("G"))),
+        Some(Compound(And, Atom("F"), Atom("G")))))))
 }
