@@ -17,17 +17,10 @@ sealed abstract class Formula {
   }
 }
 case object Formula extends ComplexParsable[Formula] {
-  /* incoming in the next commit!
-  private[this] val isAtomicFormula: (String => Boolean) = { a =>
-    tokens.forall(tok => !a.contains(tok))
-  }
-  val atomicFormula = new ParsableLexicalCategory(isAtomicFormula)
-  */
-
   val synchronousProductions: Map[List[Parsable[_]], (List[AST[Parsable[_]]] => Option[Formula])] = Map(
-    List(Word) ->
+    List(AtomicFormula) ->
       (c => for {
-        w <- Word.fromAST(c(0))
+        w <- AtomicFormula.fromAST(c(0))
       } yield Atom(w)),
     List(Terminal("¬"), Formula) ->
       (c => for {

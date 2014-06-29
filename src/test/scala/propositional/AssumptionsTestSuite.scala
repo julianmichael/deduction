@@ -11,7 +11,6 @@ class AssumptionsTestSuite extends ParsableTestSuite[Assumptions] {
 object AssumptionsTestParameters extends ParsableTestParameters[Assumptions] {
   val children = Set[Parsable[_]](
     Formula,
-    Word,
     Terminal(",")) ++
     FormulaTestParameters.children ++
     ConnectiveTestParameters.children

@@ -7,9 +7,9 @@ import deduction.Schema
 sealed abstract class AssumptionSchema extends Schema[Assumptions]
 case object AssumptionSchema extends ComplexParsable[AssumptionSchema] {
   val synchronousProductions: Map[List[Parsable[_]], (List[AST[Parsable[_]]] => Option[AssumptionSchema])] = Map(
-    List(Word) ->
+    List(Name) ->
       (c => for {
-        w <- Word.fromAST(c(0))
+        w <- Name.fromAST(c(0))
       } yield ArbitrarySetSchema(w)),
     List(Terminal("|"), FormulaSchema) ->
       (c => for {

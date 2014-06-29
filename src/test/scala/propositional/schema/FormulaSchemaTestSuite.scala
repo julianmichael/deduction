@@ -12,7 +12,7 @@ class FormulaSchemaTestSuite extends ParsableTestSuite[FormulaSchema] {
 object FormulaSchemaTestParameters extends ParsableTestParameters[FormulaSchema] {
   val children = Set[Parsable[_]](
     ConnectiveSchema,
-    Word,
+    Name,
     Terminal("("),
     Terminal(")"),
     Terminal("¬")) ++
@@ -24,12 +24,12 @@ object FormulaSchemaTestParameters extends ParsableTestParameters[FormulaSchema]
     Set("(", ")", "¬") ++
       ConnectiveSchemaTestParameters.tokens
   val productions = Set[Production[Parsable[_]]](
-    Production(FormulaSchema, List(Word)),
+    Production(FormulaSchema, List(Name)),
     Production(FormulaSchema, List(Terminal("¬"), FormulaSchema)),
     Production(FormulaSchema, List(Terminal("("), FormulaSchema, ConnectiveSchema, FormulaSchema, Terminal(")")))) ++
     ConnectiveSchemaTestParameters.productions
   val cnfProductions = Set[CNFProduction[Parsable[_]]](
-    Unary(NormalTag(FormulaSchema), NormalTag(Word)),
+    Unary(NormalTag(FormulaSchema), NormalTag(Name)),
     Binary(NormalTag(FormulaSchema), NormalTag(Terminal("¬")), NormalTag(FormulaSchema)),
     Binary(NormalTag(FormulaSchema), NormalTag(Terminal("(")), ChunkedTag(List(FormulaSchema, ConnectiveSchema, FormulaSchema, Terminal(")")))),
     Binary(ChunkedTag(List(FormulaSchema, ConnectiveSchema, FormulaSchema, Terminal(")"))), NormalTag(FormulaSchema), ChunkedTag(List(ConnectiveSchema, FormulaSchema, Terminal(")")))),

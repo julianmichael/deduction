@@ -12,7 +12,6 @@ object SequentTestParameters extends ParsableTestParameters[Sequent] {
   val children = Set[Parsable[_]](
     Assumptions,
     Formula,
-    Word,
     Terminal("⇒")) ++
     AssumptionsTestParameters.children ++
     FormulaTestParameters.children

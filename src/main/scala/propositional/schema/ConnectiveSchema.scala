@@ -7,9 +7,9 @@ import deduction.Schema
 sealed abstract class ConnectiveSchema extends Schema[Connective]
 case object ConnectiveSchema extends ComplexParsable[ConnectiveSchema] {
   val synchronousProductions: Map[List[Parsable[_]], (List[AST[Parsable[_]]] => Option[ConnectiveSchema])] = Map(
-    List(Word) ->
+    List(Name) ->
       (c => for {
-        w <- Word.fromAST(c(0))
+        w <- Name.fromAST(c(0))
       } yield ArbitraryConnectiveSchema(w)),
     List(Connective) ->
       (c => for {

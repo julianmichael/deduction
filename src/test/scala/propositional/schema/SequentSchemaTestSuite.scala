@@ -46,10 +46,10 @@ object SequentSchemaTestParameters extends ParsableTestParameters[SequentSchema]
             ASTParent[Parsable[_]](AssumptionSchema, List(
                 ASTParent(Terminal("|"), List(ASTLeaf("|"))),
                 ASTParent(FormulaSchema, List(
-                    ASTParent(Word, List(ASTLeaf("F"))))))),
+                    ASTParent(Name, List(ASTLeaf("F"))))))),
             ASTParent(Terminal("⇒"), List(ASTLeaf("⇒"))),
             ASTParent(FormulaSchema, List(
-                ASTParent(Word, List(ASTLeaf("F")))))))),
+                ASTParent(Name, List(ASTLeaf("F")))))))),
       Some(
         SequentSchema(
           SingleFormulaSchema(

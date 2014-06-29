@@ -13,6 +13,7 @@ object AssumptionSchemaTestParameters extends ParsableTestParameters[AssumptionS
   val children = Set[Parsable[_]](
     FormulaSchema,
     Terminal("∪"),
+    Name,
     Terminal(","),
     Terminal("|")) ++
     FormulaSchemaTestParameters.children
@@ -23,13 +24,13 @@ object AssumptionSchemaTestParameters extends ParsableTestParameters[AssumptionS
     Set(",", "∪", "|") ++
     FormulaSchemaTestParameters.tokens
   val productions = Set[Production[Parsable[_]]](
-    Production(AssumptionSchema, List(Word)),
+    Production(AssumptionSchema, List(Name)),
     Production(AssumptionSchema, List(Terminal("|"), FormulaSchema)),
     Production(AssumptionSchema, List(AssumptionSchema, Terminal(","), FormulaSchema)),
     Production(AssumptionSchema, List(AssumptionSchema, Terminal("∪"), AssumptionSchema))) ++
     FormulaSchemaTestParameters.productions
   val cnfProductions = Set[CNFProduction[Parsable[_]]](
-    Unary(NormalTag(AssumptionSchema), NormalTag(Word)),
+    Unary(NormalTag(AssumptionSchema), NormalTag(Name)),
     Binary(NormalTag(AssumptionSchema), NormalTag(Terminal("|")), NormalTag(FormulaSchema)),
     Binary(NormalTag(AssumptionSchema), NormalTag(AssumptionSchema), ChunkedTag(List(Terminal(","), FormulaSchema))),
     Binary(ChunkedTag(List(Terminal(","), FormulaSchema)), NormalTag(Terminal(",")), NormalTag(FormulaSchema)),
