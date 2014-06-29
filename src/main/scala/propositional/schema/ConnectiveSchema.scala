@@ -6,8 +6,7 @@ import deduction.Schema
 
 sealed abstract class ConnectiveSchema extends Schema[Connective]
 case object ConnectiveSchema extends ComplexParsable[ConnectiveSchema] {
-  val startSymbol = "CS"
-  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[ConnectiveSchema])] = Map(
+  val synchronousProductions: Map[List[Parsable[_]], (List[AST[Parsable[_]]] => Option[ConnectiveSchema])] = Map(
     List(Word) ->
       (c => for {
         w <- Word.fromAST(c(0))

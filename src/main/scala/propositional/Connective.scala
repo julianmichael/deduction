@@ -4,8 +4,7 @@ import parsing._
 
 sealed abstract class Connective
 case object Connective extends ComplexParsable[Connective] {
-  override val startSymbol = "C"
-  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[Connective])] = Map(
+  val synchronousProductions: Map[List[Parsable[_]], (List[AST[Parsable[_]]] => Option[Connective])] = Map(
     List(Terminal(And.toString)) ->
       (c => for {
         op <- Terminal(And.toString).fromAST(c(0))

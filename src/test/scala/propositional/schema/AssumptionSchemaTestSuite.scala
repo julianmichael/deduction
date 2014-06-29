@@ -16,25 +16,25 @@ object AssumptionSchemaTestParameters extends ParsableTestParameters[AssumptionS
     Terminal(","),
     Terminal("|")) ++
     FormulaSchemaTestParameters.children
-  val nonterminals = 
-    Set("AS") ++
+  val nonterminals: Set[Parsable[_]] = 
+    Set(AssumptionSchema) ++
     FormulaSchemaTestParameters.nonterminals
   val tokens =
     Set(",", "∪", "|") ++
     FormulaSchemaTestParameters.tokens
-  val productions = Set[Production](
-    RawProduction("AS", List("w")),
-    RawProduction("AS", List("|", "FS")),
-    RawProduction("AS", List("AS", ",", "FS")),
-    RawProduction("AS", List("AS", "∪", "AS"))) ++
+  val productions = Set[Production[Parsable[_]]](
+    Production(AssumptionSchema, List(Word)),
+    Production(AssumptionSchema, List(Terminal("|"), FormulaSchema)),
+    Production(AssumptionSchema, List(AssumptionSchema, Terminal(","), FormulaSchema)),
+    Production(AssumptionSchema, List(AssumptionSchema, Terminal("∪"), AssumptionSchema))) ++
     FormulaSchemaTestParameters.productions
-  val cnfProductions = Set[CNFProduction](
-    Unary("AS", "w"),
-    Binary("AS", "|", "FS"),
-    Binary("AS", "AS", "{,+FS}"),
-    ChunkedBinary("{,+FS}", ",", "FS"),
-    Binary("AS", "AS", "{∪+AS}"),
-    ChunkedBinary("{∪+AS}", "∪", "AS")) ++
+  val cnfProductions = Set[CNFProduction[Parsable[_]]](
+    Unary(NormalTag(AssumptionSchema), NormalTag(Word)),
+    Binary(NormalTag(AssumptionSchema), NormalTag(Terminal("|")), NormalTag(FormulaSchema)),
+    Binary(NormalTag(AssumptionSchema), NormalTag(AssumptionSchema), ChunkedTag(List(Terminal(","), FormulaSchema))),
+    Binary(ChunkedTag(List(Terminal(","), FormulaSchema)), NormalTag(Terminal(",")), NormalTag(FormulaSchema)),
+    Binary(NormalTag(AssumptionSchema), NormalTag(AssumptionSchema), ChunkedTag(List(Terminal("∪"), AssumptionSchema))),
+    Binary(ChunkedTag(List(Terminal("∪"), AssumptionSchema)), NormalTag(Terminal("∪")), NormalTag(AssumptionSchema))) ++
     FormulaSchemaTestParameters.cnfProductions
   val testParses = Nil
 }

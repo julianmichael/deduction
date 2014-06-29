@@ -28,8 +28,7 @@ case class SequentSchema(
   }
 }
 case object SequentSchema extends ComplexParsable[SequentSchema] {
-  val startSymbol = "SS"
-  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[SequentSchema])] = Map(
+  val synchronousProductions: Map[List[Parsable[_]], (List[AST[Parsable[_]]] => Option[SequentSchema])] = Map(
     List(AssumptionSchema, Terminal("⇒"), FormulaSchema) -> 
       (c => for {
         a <- AssumptionSchema.fromAST(c(0))

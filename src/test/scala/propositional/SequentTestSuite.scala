@@ -16,19 +16,19 @@ object SequentTestParameters extends ParsableTestParameters[Sequent] {
     Terminal("⇒")) ++
     AssumptionsTestParameters.children ++
     FormulaTestParameters.children
-  val nonterminals = Set("S") ++ AssumptionsTestParameters.nonterminals ++ FormulaTestParameters.nonterminals
+  val nonterminals: Set[Parsable[_]] = Set(Sequent) ++ AssumptionsTestParameters.nonterminals ++ FormulaTestParameters.nonterminals
   val tokens = Set("⇒") ++ AssumptionsTestParameters.tokens ++ FormulaTestParameters.tokens
-  val productions = Set[Production](
-    RawProduction("S", List("A", "⇒", "F")),
-    RawProduction("S", List("⇒", "F")),
-    RawProduction("S", List("A", "⇒"))) ++
+  val productions = Set[Production[Parsable[_]]](
+    Production(Sequent, List(Assumptions, Terminal("⇒"), Formula)),
+    Production(Sequent, List(Terminal("⇒"), Formula)),
+    Production(Sequent, List(Assumptions, Terminal("⇒")))) ++
     AssumptionsTestParameters.productions ++
     FormulaTestParameters.productions
-  val cnfProductions = Set[CNFProduction](
-    Binary("S", "A", "{⇒+F}"),
-    ChunkedBinary("{⇒+F}", "⇒", "F"),
-    Binary("S", "⇒", "F"),
-    Binary("S", "A", "⇒")) ++
+  val cnfProductions = Set[CNFProduction[Parsable[_]]](
+    Binary(NormalTag(Sequent), NormalTag(Assumptions), ChunkedTag(List(Terminal("⇒"), Formula))),
+    Binary(ChunkedTag(List(Terminal("⇒"), Formula)), NormalTag(Terminal("⇒")), NormalTag(Formula)),
+    Binary(NormalTag(Sequent), NormalTag(Terminal("⇒")), NormalTag(Formula)),
+    Binary(NormalTag(Sequent), NormalTag(Assumptions), NormalTag(Terminal("⇒")))) ++
     AssumptionsTestParameters.cnfProductions ++
     FormulaTestParameters.cnfProductions
   val testParses = List(

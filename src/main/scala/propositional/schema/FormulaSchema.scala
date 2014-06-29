@@ -6,8 +6,7 @@ import deduction.Schema
 
 sealed abstract class FormulaSchema extends Schema[Formula]
 case object FormulaSchema extends ComplexParsable[FormulaSchema] {
-  val startSymbol = "FS"
-  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[FormulaSchema])] = Map(
+  val synchronousProductions: Map[List[Parsable[_]], (List[AST[Parsable[_]]] => Option[FormulaSchema])] = Map(
     List(Word) -> 
       (c => for {
         w <- Word.fromAST(c(0))

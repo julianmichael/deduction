@@ -15,16 +15,16 @@ object AssumptionsTestParameters extends ParsableTestParameters[Assumptions] {
     Terminal(",")) ++
     FormulaTestParameters.children ++
     ConnectiveTestParameters.children
-  val nonterminals = Set("A") ++ FormulaTestParameters.nonterminals
+  val nonterminals: Set[Parsable[_]] = Set(Assumptions) ++ FormulaTestParameters.nonterminals
   val tokens = Set(",") ++ FormulaTestParameters.tokens
-  val productions = Set[Production](
-    RawProduction("A", List("F")),
-    RawProduction("A", List("A", ",", "F"))) ++
+  val productions = Set[Production[Parsable[_]]](
+    Production[Parsable[_]](Assumptions, List(Formula)),
+    Production[Parsable[_]](Assumptions, List(Assumptions, Terminal(","), Formula))) ++
     FormulaTestParameters.productions
-  val cnfProductions = Set[CNFProduction](
-    Unary("A", "F"),
-    Binary("A", "A", "{,+F}"),
-    ChunkedBinary("{,+F}", ",", "F")) ++
+  val cnfProductions = Set[CNFProduction[Parsable[_]]](
+    Unary(NormalTag[Parsable[_]](Assumptions), NormalTag[Parsable[_]](Formula)),
+    Binary(NormalTag[Parsable[_]](Assumptions), NormalTag[Parsable[_]](Assumptions), ChunkedTag[Parsable[_]](List(Terminal(","), Formula))),
+    Binary(ChunkedTag[Parsable[_]](List(Terminal(","), Formula)), NormalTag[Parsable[_]](Terminal(",")), NormalTag[Parsable[_]](Formula))) ++
     FormulaTestParameters.cnfProductions
   val testParses = Nil
 }

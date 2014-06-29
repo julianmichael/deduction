@@ -6,8 +6,7 @@ case class Assumptions(set: Set[Formula]) {
   override def toString = set.mkString(", ")
 }
 case object Assumptions extends ComplexParsable[Assumptions] {
-  override val startSymbol = "A"
-  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[Assumptions])] = Map(
+  val synchronousProductions: Map[List[Parsable[_]], (List[AST[Parsable[_]]] => Option[Assumptions])] = Map(
     List(Formula) ->
       (c => for {
         f <- Formula.fromAST(c(0))

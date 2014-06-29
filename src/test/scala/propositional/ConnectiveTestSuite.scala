@@ -13,30 +13,30 @@ object ConnectiveTestParameters extends ParsableTestParameters[Connective] {
     Terminal("∧"),
     Terminal("∨"),
     Terminal("→"))
-  val nonterminals = Set("C")
+  val nonterminals: Set[Parsable[_]] = Set(Connective)
   val tokens = Set("∧", "∨", "→")
-  val productions = Set[Production](
-    RawProduction("C", List("∧")),
-    RawProduction("C", List("∨")),
-    RawProduction("C", List("→")))
-  val cnfProductions = Set[CNFProduction](
-    Unary("C", "∧"),
-    Unary("C", "∨"),
-    Unary("C", "→"))
+  val productions = Set[Production[Parsable[_]]](
+    Production(Connective, List(Terminal("∧"))),
+    Production(Connective, List(Terminal("∨"))),
+    Production(Connective, List(Terminal("→"))))
+  val cnfProductions = Set[CNFProduction[Parsable[_]]](
+    Unary(NormalTag[Parsable[_]](Connective), NormalTag[Parsable[_]](Terminal("∧"))),
+    Unary(NormalTag[Parsable[_]](Connective), NormalTag[Parsable[_]](Terminal("∨"))),
+    Unary(NormalTag[Parsable[_]](Connective), NormalTag[Parsable[_]](Terminal("→"))))
   val testParses = List(
     TestParse[Connective](
       Some("∧"),
       None,
-      Some(BasicASTInternal("C", List(BasicASTInternal("∧", List(BasicASTLeaf("∧")))))),
+      Some(ASTParent[Parsable[_]](Connective, List(ASTParent[Parsable[_]](Terminal("∧"), List(ASTLeaf("∧")))))),
       Some(And)),
     TestParse[Connective](
       Some("∨"),
       None,
-      Some(BasicASTInternal("C", List(BasicASTInternal("∨", List(BasicASTLeaf("∨")))))),
+      Some(ASTParent[Parsable[_]](Connective, List(ASTParent[Parsable[_]](Terminal("∨"), List(ASTLeaf("∨")))))),
       Some(Or)),
     TestParse[Connective](
       Some("→"),
       None,
-      Some(BasicASTInternal("C", List(BasicASTInternal("→", List(BasicASTLeaf("→")))))),
+      Some(ASTParent[Parsable[_]](Connective, List(ASTParent[Parsable[_]](Terminal("→"), List(ASTLeaf("→")))))),
       Some(Implies)))
 }

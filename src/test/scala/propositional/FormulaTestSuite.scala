@@ -16,20 +16,20 @@ object FormulaTestParameters extends ParsableTestParameters[Formula] {
     Terminal("("),
     Terminal(")")) ++
     ConnectiveTestParameters.children
-  val nonterminals = Set("F") ++ ConnectiveTestParameters.nonterminals
+  val nonterminals: Set[Parsable[_]] = Set(Formula) ++ ConnectiveTestParameters.nonterminals
   val tokens = Set("¬", "(", ")") ++ ConnectiveTestParameters.tokens
-  val productions = Set[Production](
-    RawProduction("F", List("w")),
-    RawProduction("F", List("¬", "F")),
-    RawProduction("F", List("(", "F", "C", "F", ")"))) ++
+  val productions = Set[Production[Parsable[_]]](
+    Production(Formula, List(Word)),
+    Production(Formula, List(Terminal("¬"), Formula)),
+    Production(Formula, List(Terminal("("), Formula, Connective, Formula, Terminal(")")))) ++
     ConnectiveTestParameters.productions
-  val cnfProductions = Set[CNFProduction](
-    Unary("F", "w"),
-    Binary("F", "¬", "F"),
-    Binary("F", "(", "{F+C+F+)}"),
-    ChunkedBinary("{F+C+F+)}", "F", "{C+F+)}"),
-    ChunkedBinary("{C+F+)}", "C", "{F+)}"),
-    ChunkedBinary("{F+)}", "F", ")")) ++
+  val cnfProductions = Set[CNFProduction[Parsable[_]]](
+    Unary(NormalTag(Formula), NormalTag(Word)),
+    Binary(NormalTag(Formula), NormalTag(Terminal("¬")), NormalTag(Formula)),
+    Binary(NormalTag(Formula), NormalTag(Terminal("(")), ChunkedTag(List(Formula, Connective, Formula, Terminal(")")))),
+    Binary(ChunkedTag(List(Formula, Connective, Formula, Terminal(")"))), NormalTag(Formula), ChunkedTag(List(Connective, Formula, Terminal(")")))),
+    Binary(ChunkedTag(List(Connective, Formula, Terminal(")"))), NormalTag(Connective), ChunkedTag(List(Formula, Terminal(")")))),
+    Binary(ChunkedTag(List(Formula, Terminal(")"))), NormalTag(Formula), NormalTag(Terminal(")")))) ++
     ConnectiveTestParameters.cnfProductions
   val testParses = List(
     TestParse[Formula](

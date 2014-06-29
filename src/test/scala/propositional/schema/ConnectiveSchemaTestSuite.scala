@@ -14,15 +14,15 @@ object ConnectiveSchemaTestParameters extends ParsableTestParameters[ConnectiveS
       Connective,
       Word) ++ 
       ConnectiveTestParameters.children
-  val nonterminals = Set("CS") ++ ConnectiveTestParameters.nonterminals
+  val nonterminals: Set[Parsable[_]] = Set(ConnectiveSchema) ++ ConnectiveTestParameters.nonterminals
   val tokens = ConnectiveTestParameters.tokens
-  val productions = Set[Production](
-    RawProduction("CS", List("w")),
-    RawProduction("CS", List("C"))) ++
+  val productions = Set[Production[Parsable[_]]](
+    Production(ConnectiveSchema, List(Word)),
+    Production(ConnectiveSchema, List(Connective))) ++
     ConnectiveTestParameters.productions
-  val cnfProductions = Set[CNFProduction](
-    Unary("CS", "w"),
-    Unary("CS", "C")) ++
+  val cnfProductions = Set[CNFProduction[Parsable[_]]](
+    Unary(NormalTag(ConnectiveSchema), NormalTag(Word)),
+    Unary(NormalTag(ConnectiveSchema), NormalTag(Connective))) ++
     ConnectiveTestParameters.cnfProductions
   val testParses = Nil
 }

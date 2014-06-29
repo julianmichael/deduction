@@ -12,8 +12,7 @@ case class Sequent(assumptions: Assumptions, conclusion: Option[Formula]) {
   }
 }
 case object Sequent extends ComplexParsable[Sequent] {
-  val startSymbol = "S"
-  val synchronousProductions: Map[List[Parsable[_]], (List[AST] => Option[Sequent])] = Map(
+  val synchronousProductions: Map[List[Parsable[_]], (List[AST[Parsable[_]]] => Option[Sequent])] = Map(
     List(Assumptions, Terminal("⇒"), Formula) ->
       (c => for {
         a <- Assumptions.fromAST(c(0))

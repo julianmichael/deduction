@@ -17,24 +17,24 @@ object FormulaSchemaTestParameters extends ParsableTestParameters[FormulaSchema]
     Terminal(")"),
     Terminal("¬")) ++
     ConnectiveSchemaTestParameters.children
-  val nonterminals =
-    Set("FS") ++
+  val nonterminals: Set[Parsable[_]] =
+    Set(FormulaSchema) ++
       ConnectiveSchemaTestParameters.nonterminals
   val tokens =
     Set("(", ")", "¬") ++
       ConnectiveSchemaTestParameters.tokens
-  val productions = Set[Production](
-    RawProduction("FS", List("w")),
-    RawProduction("FS", List("¬", "FS")),
-    RawProduction("FS", List("(", "FS", "CS", "FS", ")"))) ++
+  val productions = Set[Production[Parsable[_]]](
+    Production(FormulaSchema, List(Word)),
+    Production(FormulaSchema, List(Terminal("¬"), FormulaSchema)),
+    Production(FormulaSchema, List(Terminal("("), FormulaSchema, ConnectiveSchema, FormulaSchema, Terminal(")")))) ++
     ConnectiveSchemaTestParameters.productions
-  val cnfProductions = Set[CNFProduction](
-    Unary("FS", "w"),
-    Binary("FS", "¬", "FS"),
-    Binary("FS", "(", "{FS+CS+FS+)}"),
-    ChunkedBinary("{FS+CS+FS+)}", "FS", "{CS+FS+)}"),
-    ChunkedBinary("{CS+FS+)}", "CS", "{FS+)}"),
-    ChunkedBinary("{FS+)}", "FS", ")")) ++
+  val cnfProductions = Set[CNFProduction[Parsable[_]]](
+    Unary(NormalTag(FormulaSchema), NormalTag(Word)),
+    Binary(NormalTag(FormulaSchema), NormalTag(Terminal("¬")), NormalTag(FormulaSchema)),
+    Binary(NormalTag(FormulaSchema), NormalTag(Terminal("(")), ChunkedTag(List(FormulaSchema, ConnectiveSchema, FormulaSchema, Terminal(")")))),
+    Binary(ChunkedTag(List(FormulaSchema, ConnectiveSchema, FormulaSchema, Terminal(")"))), NormalTag(FormulaSchema), ChunkedTag(List(ConnectiveSchema, FormulaSchema, Terminal(")")))),
+    Binary(ChunkedTag(List(ConnectiveSchema, FormulaSchema, Terminal(")"))), NormalTag(ConnectiveSchema), ChunkedTag(List(FormulaSchema, Terminal(")")))),
+    Binary(ChunkedTag(List(FormulaSchema, Terminal(")"))), NormalTag(FormulaSchema), NormalTag(Terminal(")")))) ++
     ConnectiveSchemaTestParameters.cnfProductions
   val testParses = List(
     TestParse[FormulaSchema](
