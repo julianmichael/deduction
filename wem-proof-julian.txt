@@ -1,0 +1,54 @@
+Goal: ((¬¬F ∨ ¬F) ∧ (¬¬F → F)) ↔ (F ∨ ¬F)
+
+First, we prove from left to right:
+Assume ((¬¬F ∨ ¬F) ∧ (¬¬F → F)).
+ 1. ((¬¬F ∨ ¬F) ∧ (¬¬F → F)) ⇒ ((¬¬F ∨ ¬F) ∧ (¬¬F → F)) (Identity)
+ 2. ((¬¬F ∨ ¬F) ∧ (¬¬F → F)) ⇒ (¬¬F → F)              (∧E2, 1)
+
+Consider two cases: ¬¬F, ¬F.
+ 3. ((¬¬F ∨ ¬F) ∧ (¬¬F → F)) ⇒ (¬¬F ∨ ¬F)             (∧E1, 1)
+
+Case 1: ¬¬F.
+ 4. ¬¬F ⇒ ¬¬F                                         (Identity)
+ 5. ((¬¬F ∨ ¬F) ∧ (¬¬F → F)), ¬¬F ⇒ F                 (→E, 4, 2)
+ 6. ((¬¬F ∨ ¬F) ∧ (¬¬F → F)), ¬¬F ⇒ (F ∨ ¬F)          (∨I1, 5)
+
+Case 2: ¬F.
+ 7. ¬F ⇒ ¬F                                           (Identity)
+ 8. ¬F ⇒ (F ∨ ¬F)                                     (∨I2, 7)
+
+In both cases, (F ∨ ¬F), concluding our case analysis.
+ 9. ((¬¬F ∨ ¬F) ∧ (¬¬F → F)) ⇒ (F ∨ ¬F)               (∨E1, 3, 6, 8)
+10.  ⇒ (((¬¬F ∨ ¬F) ∧ (¬¬F → F)) → (F ∨ ¬F))          (→I, 9)
+
+
+Now, we prove from right to left:
+Assume (F ∨ ¬F). Consider two cases: F, ¬F.
+11. (F ∨ ¬F) ⇒ (F ∨ ¬F)                               (Identity)
+
+Case 1: F.
+12. F ⇒ F                                             (Identity)
+13. F, ¬¬F ⇒ F                                        (W1, 12)
+14. F ⇒ (¬¬F → F)                                     (→I, 13)
+15. ¬F ⇒ ¬F                                           (Identity)
+16. F, ¬F ⇒                                           (¬E, 12, 7)
+17. F ⇒ ¬¬F                                           (¬I, 16)
+18. F ⇒ (¬¬F ∨ ¬F)                                    (∨I1, 17)
+19. F ⇒ ((¬¬F ∨ ¬F) ∧ (¬¬F → F))                      (∧I, 18, 14)
+
+Case 2: ¬F.
+20. ¬F ⇒ (¬¬F ∨ ¬F)                                   (∨I2, 15)
+21. ¬¬F ⇒ ¬¬F                                         (Identity)
+22. ¬F, ¬¬F ⇒                                         (¬E, 15, 21)
+23. ¬F, ¬¬F ⇒ F                                       (C, 22)
+24. ¬F ⇒ (¬¬F → F)                                    (→I, 23)
+25. ¬F ⇒ ((¬¬F ∨ ¬F) ∧ (¬¬F → F))                     (∧I, 20, 24)
+
+In both cases, ((¬¬F ∨ ¬F) ∧ (¬¬F → F)), concluding our case analysis.
+26. (F ∨ ¬F) ⇒ ((¬¬F ∨ ¬F) ∧ (¬¬F → F))               (∨E1, 11, 19, 25)
+27.  ⇒ ((F ∨ ¬F) → ((¬¬F ∨ ¬F) ∧ (¬¬F → F)))          (→I, 26)
+
+Bringing the two implications together, we have proven the biconditional.
+28.  ⇒ (((F ∨ ¬F) → ((¬¬F ∨ ¬F) ∧ (¬¬F → F))) ∧ (((¬¬F ∨ ¬F) ∧ (¬¬F → F)) → (F ∨ ¬F))) (∧I, 10, 27)
+
+QED.

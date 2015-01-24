@@ -5,6 +5,10 @@ import propositional.schema._
 
 abstract class SequentValidation {
   def name: String
+  def sequent: Sequent = this match {
+    case ValidatedAxiom(ax, _, _) => ax
+    case ValidatedDeduction(Deduction(_, conc), _, _) => conc
+  }
 }
 case class ValidatedAxiom(
     axiom: Sequent,
