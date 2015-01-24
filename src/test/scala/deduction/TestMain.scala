@@ -94,27 +94,9 @@ object TestMain extends App {
     val allProofsLines = groupPrefix(proofLines)(_.startsWith("=="))
     val allProofSeqLists = allProofsLines map (_.flatMap(Sequent.fromString).toList)
     val proofObjects = allProofSeqLists map { proofSeqList =>
-      new DeductionProof[Option](proofSeqList.reverse.head, proofSeqList)
-    }
-    val proofSeqList = allProofSeqLists.flatten
-    val validation = proofObjects.flatMap(_.validation)
-
-    ((1 to proofSeqList.length), proofSeqList, validation).zipped.foreach {
-      case (lineNum, seq, valid) => {
-        val ruleNames = valid.map {
-          case ValidatedAxiom(sequent, schema, name) => name
-          case ValidatedDeduction(deduction, rule, name) => {
-            deduction match {
-              case Deduction(premises, _) => {
-                val lineNumbers = premises map (proofSeqList.indexOf(_) + 1) mkString(", ")
-                s"$name, $lineNumbers"
-              }
-            }
-          }
-        }
-        val ruleString = ruleNames.mkString("; ")
-        println(f"$lineNum%2d. $seq%-50s($ruleString)")
-      }
+      val res = new DeductionProof[Option](proofSeqList.reverse.head, proofSeqList)
+      println(res.prettyString)
+      res
     }
   }
   import scala.io.Source

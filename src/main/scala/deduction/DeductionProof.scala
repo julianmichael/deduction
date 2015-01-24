@@ -41,4 +41,45 @@ class DeductionProof[M[+_]](
       validations :: validateProof(before)
     }
   }
+
+  def prettyString: String = {
+    // let's go mutable instead of using the state monad and see how it goes
+    import scala.collection.mutable
+    import propositional._
+    var out = new StringBuilder
+    var nextLine = 1
+
+    val sequentToLine = mutable.Map.empty[Sequent, Int]
+    val formulaToAssumptionLabel = mutable.Map.empty[Formula, String]
+    def assumptionLabel(f: Formula) = {
+      if(f.size <= 1) f.toString
+      else if(formulaToAssumptionLabel.contains(f)) formulaToAssumptionLabel(f)
+      else {
+        val newLabel = s"A${formulaToAssumptionLabel.size}"
+        out ++= s"${newLabel}. $f\n"
+        formulaToAssumptionLabel.put(f, newLabel)
+        newLabel
+      }
+    }
+
+    (proof, validation).zipped.foreach { case(s@Sequent(Assumptions(asmp), conclusion), valid) => {
+      sequentToLine.put(s, nextLine)
+      val assumptionLabels = asmp.map(assumptionLabel).mkString(", ")
+      val conclusionLabel = conclusion.getOrElse("")
+      val sequentLabel = s"$assumptionLabels => $conclusionLabel"
+      out ++= f"$nextLine%3d. $sequentLabel%-50s"
+      val ruleLabelM = valid.map {
+        case ValidatedAxiom(_, _, name) => out ++= s"($name)"
+        case ValidatedDeduction(Deduction(premises, _), _, name) => {
+          val lineNumbers = premises map (sequentToLine) mkString(", ")
+          out ++= s"($name, $lineNumbers)"
+        }
+      }
+      if(nextLine % 5 == 0) out ++= "\n\n"
+      else out ++= "\n"
+      nextLine = nextLine + 1
+    }}
+    // it went pretty well
+    out.toString
+  }
 }

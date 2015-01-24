@@ -5,7 +5,7 @@ import parsing._
 // recursively defined propositional formulas
 sealed abstract class Formula {
   // in case we want to extract the smallest necessary propositional signature
-  lazy val signature: Set[String] = this match {
+  def signature: Set[String] = this match {
     case Atom(a)           => Set(a)
     case Negation(f)       => f.signature
     case Compound(_, f, g) => f.signature ++ g.signature
@@ -14,6 +14,11 @@ sealed abstract class Formula {
     case Atom(a)            => a
     case Negation(f)        => s"¬$f"
     case Compound(op, f, g) => s"($f $op $g)"
+  }
+  def size: Int = this match {
+    case Atom(_) => 0
+    case Negation(f) => 1 + f.size
+    case Compound(_, f, g) => 1 + f.size + g.size
   }
 }
 case object Formula extends ComplexParsable[Formula] {
