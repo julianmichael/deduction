@@ -118,7 +118,7 @@ object TestMain extends App {
     }
   }
   import scala.io.Source
-  val proofFromFile = Source.fromFile("proofs/contradiction.txt").getLines.toList
+  val proofFromFile = Source.fromFile("proofs/wem.txt").getLines.toList
   validateProof(proofFromFile)
   println("--------------------")
 }
