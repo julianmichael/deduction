@@ -17,10 +17,12 @@ case object ConnectiveSchema extends ComplexParsable[ConnectiveSchema] {
       } yield SpecifiedConnectiveSchema(c)))
 }
 case class ArbitraryConnectiveSchema(name: String) extends ConnectiveSchema {
+  override def hasMatch(targ: Connective) = true
   override def matches(targ: Connective) = Map(name -> targ) :: Nil
   override val toString = name
 }
 case class SpecifiedConnectiveSchema(c: Connective) extends ConnectiveSchema {
-  def matches(targ: Connective) = if (c.equals(targ)) Map[String, Any]() :: Nil else Nil
+  override def hasMatch(targ: Connective) = c.equals(targ)
+  override def matches(targ: Connective) = if (c.equals(targ)) Map[String, Any]() :: Nil else Nil
   override val toString = c.toString
 }

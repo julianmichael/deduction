@@ -7,6 +7,16 @@ import deduction.Schema
 case class SequentSchema(
   val assumptionSchema: AssumptionSchema,
   val conclusion: Option[FormulaSchema]) extends Schema[Sequent] {
+  override def hasMatch(targ: Sequent) = targ match {
+    case Sequent(assumptions, formula) =>
+      assumptionSchema.hasMatch(assumptions) &&
+      ((conclusion, formula) match {
+        case (Some(conc), Some(form)) => conc.hasMatch(form)
+        case (None, None) => true
+        case _ => false
+      }) &&
+      !matches(targ).isEmpty
+  }
   def matches(targ: Sequent): List[Map[String, Any]] = targ match {
     case Sequent(assumptions, formula) => {
       val assumptionNamings = assumptionSchema.matches(assumptions)

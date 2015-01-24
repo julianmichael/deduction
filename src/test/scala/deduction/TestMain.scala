@@ -8,6 +8,9 @@ import propositional.schema.SequentSchema
 import propositional.schema.FormulaSchemaTestParameters
 import propositional.schema.SequentSchemaTestParameters
 
+import scalaz._
+import Scalaz._
+
 object TestMain extends App {
 
   val goodOrFormulaStrings = List(
@@ -66,42 +69,56 @@ object TestMain extends App {
   val deduction = Deduction(premises, conclusion)
   println(s"Matching:\t${conjunctionIntroduction.matches(deduction)}")
   println("----------")
-  val ruleFromString = for {
+  val ruleFromString = (for {
     a1 <- SequentSchema.fromString("Γ ⇒ F")
     a2 <- SequentSchema.fromString("Δ ⇒ G")
     conc <- SequentSchema.fromString("Γ ∪ Δ ⇒ (F ∧ G)")
-  } yield DeductionRule(List(a1, a2), conc)
-  println(conjunctionIntroduction)
+  } yield DeductionRule(List(a1, a2), conc)).headOption
   println(ruleFromString)
   println(Some(conjunctionIntroduction) == ruleFromString)
-  
+
+  // From Martin Odersky on SO
+  /** Returns shortest possible list of lists xss such that
+  *   - xss.flatten == xs
+  *   - No sublist in xss contains an element matching p in its tail
+  */
+ def groupPrefix[T](xs: List[T])(p: T => Boolean): List[List[T]] = xs match {
+   case List() => List()
+   case x :: xs1 => 
+     val (ys, zs) = xs1 span (!p(_))
+     (x :: ys) :: groupPrefix(zs)(p)
+ }
+
   println("--------------------")
-  val proofString =
-    """(p ∧ ¬p) ⇒ (p ∧ ¬p)
-    (p ∧ ¬p) ⇒ p
-    (p ∧ ¬p) ⇒ ¬p
-    (p ∧ ¬p) ⇒
-    (p ∧ ¬p) ⇒ q
-    ⇒ ((p ∧ ¬p) → q)"""
-  val proofSeqStrings = proofString.split("\n")
-  val proofSeqList = proofSeqStrings.flatMap(Sequent.fromString).toList
-  val proofObject = new DeductionProof(proofSeqList.reverse.head, proofSeqList)
-  ((1 to proofSeqList.length), proofSeqList, proofObject.validation).zipped.foreach {
-    case (lineNum, seq, valids) => {
-      val ruleNames = valids.map {
-        case ValidatedAxiom(sequent, schema, name) => name
-        case ValidatedDeduction(deduction, rule, name) => {
-          deduction match {
-            case Deduction(premises, _) => {
-              val lineNumbers = premises map (proofSeqList.indexOf(_) + 1) mkString(", ")
-              s"$name, $lineNumbers"
+  def validateProof(proofLines: List[String]) = {
+    val allProofsLines = groupPrefix(proofLines)(_.startsWith("=="))
+    val allProofSeqLists = allProofsLines map (_.flatMap(Sequent.fromString).toList)
+    val proofObjects = allProofSeqLists map { proofSeqList =>
+      new DeductionProof[Option](proofSeqList.reverse.head, proofSeqList)
+    }
+    val proofSeqList = allProofSeqLists.flatten
+    val validation = proofObjects.flatMap(_.validation)
+
+    ((1 to proofSeqList.length), proofSeqList, validation).zipped.foreach {
+      case (lineNum, seq, valid) => {
+        val ruleNames = valid.map {
+          case ValidatedAxiom(sequent, schema, name) => name
+          case ValidatedDeduction(deduction, rule, name) => {
+            deduction match {
+              case Deduction(premises, _) => {
+                val lineNumbers = premises map (proofSeqList.indexOf(_) + 1) mkString(", ")
+                s"$name, $lineNumbers"
+              }
             }
           }
         }
+        val ruleString = ruleNames.mkString("; ")
+        println(f"$lineNum%2d. $seq%-50s($ruleString)")
       }
-      val ruleString = ruleNames.mkString("; ")
-      println(f"$lineNum%2d. $seq%-25s($ruleString)")
     }
   }
+  import scala.io.Source
+  val proofFromFile = Source.fromFile("proofs/contradiction.txt").getLines.toList
+  validateProof(proofFromFile)
   println("--------------------")
 }

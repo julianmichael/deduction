@@ -2,6 +2,7 @@ package deduction
 
 trait Schema[A] {
   def matches(a: A): List[Map[String, Any]]
+  def hasMatch(a: A): Boolean
   def consistentNamings(listOfNamingLists: List[List[Map[String, Any]]]): List[Map[String, Any]] = {
     listOfNamingLists match {
       case Nil => Map[String, Any]() :: Nil

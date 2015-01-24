@@ -20,6 +20,13 @@ case class Deduction(premises: List[Sequent], conclusion: Sequent)
 case class DeductionRule(
   premiseSchemas: List[SequentSchema],
   conclusionSchema: SequentSchema) extends Schema[Deduction] {
+
+  def hasMatch(targ: Deduction) = targ match {
+    case Deduction(premises, conclusion) =>
+      (premiseSchemas, premises).zipped.map(_.hasMatch(_)).forall(identity) &&
+      conclusionSchema.hasMatch(conclusion) && !matches(targ).isEmpty
+  }
+
   def matches(targ: Deduction) = targ match {
     case Deduction(premises, conclusion) => {
       if (premises.length != premiseSchemas.length) {
@@ -83,13 +90,13 @@ object DeductionRule {
       p1 <- SequentSchema.fromStringUnique("Γ ⇒ (F ∨ G)")
       p2 <- SequentSchema.fromStringUnique("Δ1, F ⇒ Σ")
       p3 <- SequentSchema.fromStringUnique("Δ2, G ⇒ Σ")
-      conc <- SequentSchema.fromStringUnique("Γ ∪ Δ1 ∪ Δ2 ⇒ Σ")
+      conc <- SequentSchema.fromString("Γ ∪ Δ1 ∪ Δ2 ⇒ Σ").headOption
     } yield DeductionRule(List(p1, p2, p3), conc)).get,
     "∨E2" -> (for {
       p1 <- SequentSchema.fromStringUnique("Γ ⇒ (F ∨ G)")
       p2 <- SequentSchema.fromStringUnique("Δ1, F ⇒")
       p3 <- SequentSchema.fromStringUnique("Δ2, G ⇒")
-      conc <- SequentSchema.fromStringUnique("Γ ∪ Δ1 ∪ Δ2 ⇒")
+      conc <- SequentSchema.fromString("Γ ∪ Δ1 ∪ Δ2 ⇒").headOption
     } yield DeductionRule(List(p1, p2, p3), conc)).get,
     "→E" -> (for {
       p1 <- SequentSchema.fromStringUnique("Γ ⇒ F")

@@ -27,10 +27,12 @@ case object AssumptionSchema extends ComplexParsable[AssumptionSchema] {
       } yield UnionSchema(a1, a2)))
 }
 case class ArbitrarySetSchema(name: String) extends AssumptionSchema {
+  override def hasMatch(targ: Assumptions) = true
   override def matches(targ: Assumptions) = Map(name -> targ) :: Nil
   override val toString = name
 }
 case class AssumptionsPlusFormulaSchema(remainingAssumptionSchema: AssumptionSchema, formulaSchema: FormulaSchema) extends AssumptionSchema {
+  override def hasMatch(targ: Assumptions) = !targ.set.isEmpty && !matches(targ).isEmpty
   override def matches(targ: Assumptions) = {
     targ.set.toList flatMap { formula =>
       {
@@ -44,6 +46,7 @@ case class AssumptionsPlusFormulaSchema(remainingAssumptionSchema: AssumptionSch
   override val toString = s"$remainingAssumptionSchema, $formulaSchema"
 }
 case class UnionSchema(one: AssumptionSchema, two: AssumptionSchema) extends AssumptionSchema {
+  override def hasMatch(targ: Assumptions) = !matches(targ).isEmpty // :( need more efficient
   override def matches(targ: Assumptions) = {
     targ.set.subsets.toList flatMap {
       case first => {
@@ -62,6 +65,7 @@ case class UnionSchema(one: AssumptionSchema, two: AssumptionSchema) extends Ass
   override val toString = s"$one ∪ $two"
 }
 case class SingleFormulaSchema(formulaSchema: FormulaSchema) extends AssumptionSchema {
+  override def hasMatch(targ: Assumptions) = targ.set.size == 1
   override def matches(targ: Assumptions) = {
     if (targ.set.size != 1) Nil
     else {
@@ -72,6 +76,7 @@ case class SingleFormulaSchema(formulaSchema: FormulaSchema) extends AssumptionS
   override val toString = s"|$formulaSchema"
 }
 case object EmptySchema extends AssumptionSchema {
+  override def hasMatch(targ: Assumptions) = targ.set.isEmpty
   override def matches(targ: Assumptions) = {
     if (targ.set.isEmpty) Map[String, Any]() :: Nil
     else Nil

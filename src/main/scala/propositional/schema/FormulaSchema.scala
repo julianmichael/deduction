@@ -24,12 +24,17 @@ case object FormulaSchema extends ComplexParsable[FormulaSchema] {
   )
 }
 case class ArbitraryFormulaSchema(name: String) extends FormulaSchema {
+  override def hasMatch(targ: Formula) = true
   override def matches(targ: Formula) = Map(name -> targ) :: Nil
   override val toString = name
 }
 
 // as of yet unused
 case class AtomSchema(name: String) extends FormulaSchema {
+  override def hasMatch(targ: Formula) = targ match {
+    case Atom(_) => true
+    case _ => false
+  }
   override def matches(targ: Formula) = targ match {
     case Atom(a) => Map(name -> a) :: Nil
     case _       => Nil
@@ -37,6 +42,10 @@ case class AtomSchema(name: String) extends FormulaSchema {
   override val toString = name
 }
 case class NegationSchema(f: FormulaSchema) extends FormulaSchema {
+  override def hasMatch(targ: Formula) = targ match {
+    case Negation(negated) => f.hasMatch(negated)
+    case _ => false
+  }
   override def matches(targ: Formula) = targ match {
     case Negation(negated) => f.matches(negated)
     case _                 => Nil
@@ -44,6 +53,11 @@ case class NegationSchema(f: FormulaSchema) extends FormulaSchema {
   override val toString = s"¬$f"
 }
 case class CompoundSchema(c: ConnectiveSchema, f: FormulaSchema, g: FormulaSchema) extends FormulaSchema {
+  override def hasMatch(targ: Formula) = targ match {
+    case Compound(op, first, second) =>
+      c.hasMatch(op) && f.hasMatch(first) && g.hasMatch(second) && !matches(targ).isEmpty
+    case _ => false
+  }
   override def matches(targ: Formula) = targ match {
     case Compound(op, first, second) => {
       val connectiveNamings = c.matches(op)
